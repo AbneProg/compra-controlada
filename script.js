@@ -52,7 +52,7 @@ function atualizarTabela() {
       <td>${item.quantidade}</td><td>R$ ${item.subtotal.toFixed(2)}</td></tr>`;
   });
 
-  html += `</tbody></table><h5>Total Geral: R$ ${total.toFixed(2)}</h5>`;
+  html += `</tbody></table><h5>Total Geral: €$ ${total.toFixed(2)}</h5>`;
   $('#tabelaCompras').html(html);
 }
 
