@@ -1,7 +1,7 @@
 let lista = [];
 let total = 0;
 
-// Inicia a compra e armazena o nome do estabelecimento e a data
+// Função para iniciar a compra
 function iniciarCompra() {
   const estabelecimento = $('#estabelecimento').val().trim();
   const data = $('#data').val().trim();
@@ -20,8 +20,12 @@ function iniciarCompra() {
   $('#formularioItens').show();
 }
 
-$('#estabelecimento').on('change', function() {
-  if ($(this).val().trim() && $('#data').val().trim()) {
+// Monitorar mudanças no campo de estabelecimento e data
+$('#estabelecimento, #data').on('change', function() {
+  const estabelecimento = $('#estabelecimento').val().trim();
+  const data = $('#data').val().trim();
+
+  if (estabelecimento && data) {
     $('#formularioItens').show();
   } else {
     $('#formularioItens').hide();
