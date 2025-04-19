@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -12,11 +11,24 @@
 <body class="container py-4">
   <h1 class="mb-4">Compra Controlada 🛒</h1>
 
+  <!-- Tela Inicial com Nome do Estabelecimento e Data -->
   <div class="mb-3">
     <label for="estabelecimento" class="form-label">Estabelecimento</label>
     <input type="text" class="form-control" id="estabelecimento" placeholder="Digite o nome do local da compra">
   </div>
 
+  <!-- Campo de Data -->
+  <div class="mb-3">
+    <label for="data" class="form-label">Data</label>
+    <input type="date" class="form-control" id="data">
+  </div>
+
+  <!-- Botão para Consultar Compras Anteriores -->
+  <div class="mb-3">
+    <button class="btn btn-primary" onclick="consultarCompras()">Consultar Compras Anteriores</button>
+  </div>
+
+  <!-- Formulário de Itens, Inicialmente Oculto -->
   <div id="formularioItens" style="display:none;">
     <div class="mb-2">
       <label>Descrição do Item</label>
@@ -38,6 +50,7 @@
     <button class="btn btn-warning mt-2" onclick="finalizarCompra()">Finalizar Compra</button>
   </div>
 
+  <!-- Tabela de Compras -->
   <div id="tabelaCompras" class="mt-4"></div>
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

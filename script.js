@@ -1,25 +1,34 @@
-
 let lista = [];
 let total = 0;
 
+// Inicia a compra e armazena o nome do estabelecimento e a data
 function iniciarCompra() {
   const estabelecimento = $('#estabelecimento').val().trim();
+  const data = $('#data').val().trim();
+
   if (!estabelecimento) {
     alert('Por favor, informe o nome do estabelecimento antes de adicionar itens.');
     return;
   }
+  if (!data) {
+    alert('Por favor, informe a data da compra.');
+    return;
+  }
+
   sessionStorage.setItem('estabelecimento', estabelecimento);
+  sessionStorage.setItem('data', data);
   $('#formularioItens').show();
 }
 
 $('#estabelecimento').on('change', function() {
-  if ($(this).val().trim()) {
+  if ($(this).val().trim() && $('#data').val().trim()) {
     $('#formularioItens').show();
   } else {
     $('#formularioItens').hide();
   }
 });
 
+// Adiciona um item à lista de compras
 function adicionarItem() {
   const descricao = $('#descricao').val().trim();
   const marca = $('#marca').val().trim();
@@ -43,19 +52,61 @@ function adicionarItem() {
   atualizarTabela();
 }
 
+// Atualiza a tabela com os itens e o total
 function atualizarTabela() {
-  let html = `<h4>Estabelecimento: ${sessionStorage.getItem('estabelecimento')}</h4><table class="table table-bordered"><thead><tr>
-    <th>Item</th><th>Marca</th><th>Valor Unitário</th><th>Qtd</th><th>Subtotal</th></tr></thead><tbody>`;
+  let html = `<h4>Estabelecimento: ${sessionStorage.getItem('estabelecimento')}</h4>
+              <h5>Data: ${sessionStorage.getItem('data')}</h5>
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th>Marca</th>
+                    <th>Valor Unitário</th>
+                    <th>Qtd</th>
+                    <th>Subtotal</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody>`;
 
-  lista.forEach(item => {
-    html += `<tr><td>${item.descricao}</td><td>${item.marca}</td><td>R$ ${item.valor.toFixed(2)}</td>
-      <td>${item.quantidade}</td><td>R$ ${item.subtotal.toFixed(2)}</td></tr>`;
+  lista.forEach((item, index) => {
+    html += `
+      <tr>
+        <td>${item.descricao}</td>
+        <td>${item.marca}</td>
+        <td>R$ ${item.valor.toFixed(2)}</td>
+        <td>${item.quantidade}</td>
+        <td>R$ ${item.subtotal.toFixed(2)}</td>
+        <td>
+          <button class="btn btn-warning" onclick="editarItem(${index})">Editar</button>
+          <button class="btn btn-danger" onclick="excluirItem(${index})">Excluir</button>
+        </td>
+      </tr>`;
   });
 
-  html += `</tbody></table><h5>Total Geral: €$ ${total.toFixed(2)}</h5>`;
+  html += `</tbody></table><h5>Total Geral: R$ ${total.toFixed(2)}</h5>`;
   $('#tabelaCompras').html(html);
 }
 
+// Edita um item na lista de compras
+function editarItem(index) {
+  const item = lista[index];
+  $('#descricao').val(item.descricao);
+  $('#marca').val(item.marca);
+  $('#valor').val(item.valor);
+  $('#quantidade').val(item.quantidade);
+
+  excluirItem(index); // Exclui o item para evitar duplicação
+}
+
+// Exclui um item da lista de compras
+function excluirItem(index) {
+  lista.splice(index, 1);
+  total = lista.reduce((acc, item) => acc + item.subtotal, 0);
+  atualizarTabela();
+}
+
+// Finaliza a compra e salva no armazenamento local
 function finalizarCompra() {
   if (lista.length === 0) {
     alert('Adicione ao menos um item antes de finalizar.');
@@ -65,7 +116,7 @@ function finalizarCompra() {
     let comprasRealizadas = JSON.parse(localStorage.getItem('comprasRealizadas') || '[]');
     comprasRealizadas.push({
       estabelecimento: sessionStorage.getItem('estabelecimento'),
-      data: new Date().toLocaleDateString(),
+      data: sessionStorage.getItem('data'),
       itens: lista,
       total
     });
@@ -76,5 +127,22 @@ function finalizarCompra() {
     $('#formularioItens').hide();
     $('#tabelaCompras').html('');
     $('#estabelecimento').val('');
+    $('#data').val('');
   }
+}
+
+// Função para consultar as compras anteriores
+function consultarCompras() {
+  let comprasRealizadas = JSON.parse(localStorage.getItem('comprasRealizadas') || '[]');
+  if (comprasRealizadas.length === 0) {
+    alert('Não há compras anteriores registradas.');
+    return;
+  }
+
+  let html = '<h4>Compras Anteriores</h4><ul>';
+  comprasRealizadas.forEach(compra => {
+    html += `<li><strong>${compra.estabelecimento}</strong> - ${compra.data} - Total: R$ ${compra.total.toFixed(2)}</li>`;
+  });
+  html += '</ul>';
+  $('#tabelaCompras').html(html);
 }
