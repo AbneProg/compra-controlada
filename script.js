@@ -18,19 +18,9 @@ function iniciarCompra() {
   sessionStorage.setItem('estabelecimento', estabelecimento);
   sessionStorage.setItem('data', data);
   $('#formularioItens').show();
+  $('#estabelecimento').parent().hide();
+  $('#data').parent().hide();
 }
-
-// Monitorar mudanças no campo de estabelecimento e data
-$('#estabelecimento, #data').on('change', function() {
-  const estabelecimento = $('#estabelecimento').val().trim();
-  const data = $('#data').val().trim();
-
-  if (estabelecimento && data) {
-    $('#formularioItens').show();
-  } else {
-    $('#formularioItens').hide();
-  }
-});
 
 // Adiciona um item à lista de compras
 function adicionarItem() {
@@ -54,6 +44,12 @@ function adicionarItem() {
   lista.push({ descricao, marca, valor, quantidade, subtotal });
   total += subtotal;
   atualizarTabela();
+  $('#descricao').val('');
+  $('#marca').val('');
+  $('#valor').val('');
+  $('#quantidade').val('');
+  $('#descricao').focus();
+
 }
 
 // Atualiza a tabela com os itens e o total
@@ -116,7 +112,7 @@ function finalizarCompra() {
     alert('Adicione ao menos um item antes de finalizar.');
     return;
   }
-  if (confirm('Deseja finalizar a compra?')) {
+  if (confirm('Tem certeza que deseja Finalizar a Compra?')) {
     let comprasRealizadas = JSON.parse(localStorage.getItem('comprasRealizadas') || '[]');
     comprasRealizadas.push({
       estabelecimento: sessionStorage.getItem('estabelecimento'),
@@ -126,6 +122,7 @@ function finalizarCompra() {
     });
     localStorage.setItem('comprasRealizadas', JSON.stringify(comprasRealizadas));
     alert('Compra finalizada e salva!');
+    gerarExportacoes(lista);
     lista = [];
     total = 0;
     $('#formularioItens').hide();
@@ -149,4 +146,29 @@ function consultarCompras() {
   });
   html += '</ul>';
   $('#tabelaCompras').html(html);
+}
+
+function gerarExportacoes(lista) {
+  let texto = `Estabelecimento: ${sessionStorage.getItem('estabelecimento')}\n`;
+  texto += `Data: ${sessionStorage.getItem('data')}\n\n`;
+  texto += `Itens:\n`;
+  lista.forEach(item => {
+    texto += `- ${item.descricao} ${item.marca ? '(' + item.marca + ')' : ''} x${item.quantidade} - R$ ${item.valor.toFixed(2)}\n`;
+  });
+  texto += `\nTotal: R$ ${total.toFixed(2)}`;
+
+  // WhatsApp
+  const whatsappURL = `https://wa.me/?text=${encodeURIComponent(texto)}`;
+  if (confirm("Deseja compartilhar a com  pra via WhatsApp?")) {
+    window.open(whatsappURL, "_blank");
+  }
+
+  // Download .txt
+  const blob = new Blob([texto], { type: "text/plain;charset=utf-8" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "compra.txt";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
