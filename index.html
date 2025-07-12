@@ -12,17 +12,20 @@
   <h1 class="mb-4">Compra Controlada 🛒</h1>
 
   <!-- Tela Inicial com Nome do Estabelecimento e Data -->
+  <div id="inicioCompra">
   <div class="mb-3">
     <label for="estabelecimento" class="form-label">Estabelecimento</label>
     <input type="text" class="form-control" id="estabelecimento" placeholder="Digite o nome do local da compra">
   </div>
 
-  <!-- Campo de Data -->
   <div class="mb-3">
     <label for="data" class="form-label">Data</label>
     <input type="date" class="form-control" id="data">
     <small class="text-muted">Formato: DD/MM/AAAA</small>
   </div>
+
+  <button class="btn btn-success" onclick="iniciarCompra()">Iniciar Compra</button>
+</div>
 
   <!-- Botão para Consultar Compras Anteriores -->
   <div class="mb-3">
